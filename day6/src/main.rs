@@ -33,13 +33,9 @@ fn find_unique_sequence<R: BufRead, const N: usize>(mut input: R) -> usize {
     let mut input_index = marker_buffer.len();
     let mut input_buffer: [u8; 1] = [0; 1];
 
-    while input.read(&mut input_buffer).unwrap() != 0 {
+    while !is_unique_sequence(&marker_buffer) && input.read(&mut input_buffer).unwrap() != 0 {
         let character = input_buffer[0];
         marker_buffer[marker_buf_index] = character;
-
-        if is_unique_character(&marker_buffer) {
-            return input_index + 1;
-        }
 
         marker_buf_index = if marker_buf_index == marker_buffer.len() - 1 {
             0
@@ -50,10 +46,10 @@ fn find_unique_sequence<R: BufRead, const N: usize>(mut input: R) -> usize {
         input_index += 1;
     }
 
-    0
+    input_index
 }
 
-fn is_unique_character(marker: &[u8]) -> bool {
+fn is_unique_sequence(marker: &[u8]) -> bool {
     for i in 0..marker.len() {
         for j in i + 1..marker.len() {
             if marker[i] == marker[j] {
